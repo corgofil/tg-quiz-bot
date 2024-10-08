@@ -2,9 +2,11 @@ import { useState } from "react";
 import "./style.css";
 
 import {NavLink} from "react-router-dom";
+import { useEffect } from "react";
 
 const Navbar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
+    const tg = window.Telegram.WebApp;
 
     const toggleMenu = () => {
         setMenuOpen(!menuOpen);
@@ -13,6 +15,14 @@ const Navbar = () => {
     const closeMenu = () => {
         setMenuOpen(false);
     };
+
+    useEffect( () => {
+        tg.ready();
+      }, [])
+    
+    const onClose = () => {
+          tg.close()
+      }
 
     return (
         <>
@@ -38,6 +48,7 @@ const Navbar = () => {
                     <li className="nav-list__item">
                         <NavLink to="/" className="nav-list__link" onClick={closeMenu}>Профиль</NavLink>
                     </li>
+                    <button onClick={onClose}>Close</button>
                     <li className="nav-list__item">
                         <NavLink to="/editor" className="nav-list__link" onClick={closeMenu}>Редактор тестов</NavLink>
                     </li>

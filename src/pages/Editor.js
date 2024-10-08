@@ -3,6 +3,8 @@ import "./style.css"
 import {NavLink} from "react-router-dom";
 
 const Editor = () => {
+    
+
     return ( 
         <main className="editor">
             <div className="header__wrapper">
