@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 
-const Creator = () => {
+const QuestionsData = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -21,7 +21,6 @@ const Creator = () => {
   return (
     <main className="creator">
       <div className="container">
-        <div className="editor_title">Создание теста</div>
         {loading ? (
           <p>Loading...</p>
         ) : (
@@ -60,4 +59,4 @@ const Creator = () => {
   );
 };
 
-export default Creator;
+export default QuestionsData;

@@ -1,0 +1,90 @@
+.constructor {
+    display: flex;
+	justify-content: center;
+	align-items: center;
+
+    padding: 40px 0;
+
+    color: var(--black);
+}
+
+.constructor_wrapper {
+    padding: 15px;
+	max-width: 660px;
+    width: 100%;
+    margin-bottom: 15px;
+    background-color: var(--blue-background);
+    border-radius: 10px;
+}
+  
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .field, .question-block {
+    margin-bottom: 20px;
+  }
+  
+  label {
+    font-weight: bold;
+    margin-right: 10px;
+  }
+  
+  input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  
+  .question-block {
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: var(--blue-background);
+    border-radius: 10px;
+  }
+  
+  .answer-block {
+    margin-bottom: 10px;
+  }
+  
+  .add-answer-btn, .add-question-btn, .save-btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .add-answer-btn {
+    background-color: #2196F3;
+  }
+  
+  .add-answer-btn:hover, .add-question-btn:hover, .save-btn:hover {
+    background-color: #45a049;
+  }
+  
+  .add-question-btn {
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+  }
+  
+  .save-btn {
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+    background-color: #FF5722;
+  }
+  
+  button:focus {
+    outline: none;
+  }
+  

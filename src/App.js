@@ -3,7 +3,7 @@ import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import Navbar from "./components/navbar/Navbar";
 import Editor from "./pages/Editor";
 import Home from "./pages/Home";
-import Creator from "./pages/Creator";
+import TestConstructor from "./pages/TestConstructor";
 import Infotest from "./pages/Infotest";
 
 
@@ -18,7 +18,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home/>}/>
           <Route path="/editor" element={<Editor/>}/>
-          <Route path="/editor/creator" element={<Creator/>}/>
+          <Route path="/editor/constructor" element={<TestConstructor/>}/>
           <Route path="/editor/info_test" element={<Infotest/>}/>
         </Routes>
 
