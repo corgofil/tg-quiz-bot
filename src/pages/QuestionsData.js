@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
+import {NavLink} from "react-router-dom";
 
 const QuestionsData = () => {
   const [data, setData] = useState([]);
@@ -8,13 +9,19 @@ const QuestionsData = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://0.0.0.0:8001/api/v1/test_lessons/all_tests');
+        const response = await axios.get('http://localhost:8001/api/v1/test_lessons/all_tests', {
+          headers: {
+            'ngrok-skip-browser-warning': '69420'
+          }
+        });
         setData(response.data);
+        console.log(response.data);
         setLoading(false);
       } catch (error) {
         console.error(error);
       }
     };
+
     fetchData();
   }, []);
 
@@ -26,31 +33,17 @@ const QuestionsData = () => {
         ) : (
           <div>
             {data.map((item) => (
-              <div key={item.id}>
-                <h2>{item.title}</h2>
-                {item.teacher && (
-                  <p>Teacher: {item.teacher.name}</p>
-                )}
-                {item.teacher && (
-                  <p>Role: {item.teacher.role}</p>
-                )}
-                {item.teacher && (
-                  <p>Created at: {item.teacher.created_at}</p>
-                )}
-                <h3>Questions:</h3>
-                <ul>
-                  {item.questions && (
-                    item.questions.map((question, questionIndex) => (
-                      <li key={questionIndex}>
-                        <p>{question.text}</p>
-                      </li>
-                    ))
+              <NavLink to="/editor/info_test">
+                <div key={item.id}  className="test">
+                  <p className="test_name">{item.title}</p>
+                  {item.teacher && (
+                    <p className="test_author">Автор: {item.teacher.name}</p>
                   )}
-                </ul>
-                {item.test_results && (
-                  <p>Test results: {item.test_results}</p>
-                )}
-              </div>
+                  {item.teacher && (
+                    <p className="test_date">{item.teacher.created_at}</p>
+                  )}
+                </div>
+              </NavLink>
             ))}
           </div>
         )}
