@@ -33,7 +33,10 @@ const QuestionsData = () => {
         ) : (
           <div>
             {data.map((item) => (
-              <NavLink to="/editor/info_test">
+              <NavLink key={item.id} to={{
+                pathname: "/editor/info_test",
+                state: { testData: item } 
+              }}>
                 <div key={item.id}  className="test">
                   <p className="test_name">{item.title}</p>
                   {item.teacher && (

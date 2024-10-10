@@ -1,8 +1,11 @@
 import {NavLink} from "react-router-dom";
-
+import { useLocation } from 'react-router-dom';
 import arrow from "./../img/left-arrow.svg"
 
 const Infotest = () => {
+    const location = useLocation();
+    const testData = location.state?.testData; // Получаем переданные данные
+    console.log(testData)
     return ( 
         <main className="info_test_wrapper">
             <div className="container">
@@ -13,11 +16,11 @@ const Infotest = () => {
                     <NavLink to="" className="btn_test_editor">Редактировать</NavLink>
                 </div>
                 <div className="test">
-                    <div className="test_title">Сетевые помехоподавляющие пассивные фильтры низких и высоких частот</div>
+                    <div className="test_title">{testData.title}</div>
                     <div className="info_test">
-                        <div className="info_point">Автор: Макарян А.С.</div>
-                        <div className="info_point">30.09.24</div>
-                        <div className="info_point">Группы: 22-КБ-ИБ1, 22-КБ-ИБ2, 23-КБ-ИБ1, 23-КБ-ИБ2</div>
+                        <div className="info_point">Автор: {testData.teacher.name}</div>
+                        <div className="info_point">{testData.created_at}</div>
+                        <div className="info_point">Группы: {testData.teacher.groups}</div>
                     </div>
                     <NavLink to="" className="btn_test_editor btn_state">Статистика</NavLink>
                     <div className="test_text">
