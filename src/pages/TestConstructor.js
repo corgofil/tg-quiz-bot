@@ -6,7 +6,7 @@ import './style.css';
 const TestConstructor = () => {
   const [testTitle, setTestTitle] = useState('');
   const [questions, setQuestions] = useState([
-    { questionText: '', answers: ['', ''] }
+    { questionText: '', answers: ['', ''], correctAnswer: 0, image: null }
   ]);
 
   // Обработчики изменения
@@ -26,9 +26,21 @@ const TestConstructor = () => {
     setQuestions(newQuestions);
   };
 
+  const handleCorrectAnswerChange = (qIndex, value) => {
+    const newQuestions = [...questions];
+    newQuestions[qIndex].correctAnswer = value;
+    setQuestions(newQuestions);
+  };
+
+  const handleImageUpload = (qIndex, file) => {
+    const newQuestions = [...questions];
+    newQuestions[qIndex].image = file;
+    setQuestions(newQuestions);
+  };
+
   // Добавление вопросов и ответов
   const addQuestion = () => {
-    setQuestions([...questions, { questionText: '', answers: ['', ''] }]);
+    setQuestions([...questions, { questionText: '', answers: ['', ''], correctAnswer: 0, image: null }]);
   };
 
   const addAnswer = (qIndex) => {
@@ -37,9 +49,21 @@ const TestConstructor = () => {
     setQuestions(newQuestions);
   };
 
+  // Удаление вопроса
+  const deleteQuestion = (qIndex) => {
+    const newQuestions = questions.filter((_, index) => index !== qIndex);
+    setQuestions(newQuestions);
+  };
+
+  // Удаление ответа
+  const deleteAnswer = (qIndex, aIndex) => {
+    const newQuestions = [...questions];
+    newQuestions[qIndex].answers = newQuestions[qIndex].answers.filter((_, index) => index !== aIndex);
+    setQuestions(newQuestions);
+  };
+
   // Сохранение данных
   const saveTest = async () => {
-    // Проверяем, что все поля заполнены
     if (!testTitle) {
       alert('Пожалуйста, введите название теста.');
       return;
@@ -60,30 +84,43 @@ const TestConstructor = () => {
 
     try {
       const creator_id = '87869c3a-9eb1-4985-b7af-65242e90a271'; // Убедитесь, что здесь используется правильный id
-      // 1. Сначала сохраняем название темы и получаем test_id
       const testResponse = await axios.post(`http://localhost:8001/api/v1/test_lessons/create_test/${creator_id}`, { title: testTitle });
-      const test_id = testResponse.data.id; // Предположим, в ответе есть поле id с идентификатором теста
+      const test_id = testResponse.data.id; 
 
-      // 2. Затем сохраняем вопросы
       const questionIds = [];
-
       for (const question of questions) {
-        const questionResponse = await axios.post(`http://localhost:8001/api/v1/test_lessons/question/${test_id}`, { text: question.questionText });
+        const questionResponse = await axios.post(`http://localhost:8001/api/v1/test_lessons/question/${test_id}`, 
+          { text: question.questionText });
         const question_id = questionResponse.data.id;
-        console.log(questionResponse.data)
         questionIds.push(question_id);
+
+        // Сохраняем правильный ответ
+        await axios.post(`http://localhost:8001/api/v1/test_lessons/answer/${question_id}`, {
+          answerIndex: question.correctAnswer
+        });
+
+        // Загрузка изображения
+        if (question.image) {
+          const formData = new FormData();
+          formData.append('image', question.image);
+          await axios.post(`http://localhost:8001/api/v1/test_lessons/upload_image/${question_id}`, formData);
+        }
       }
 
-      console.log("Созданные question_ids: ", questionIds); // Для отладки
-
-        // 3. И наконец, сохраняем ответы
       for (const question_id of questionIds) {
-        const qIndex = questionIds.indexOf(question_id); // Находим индекс текущего question_id
-
-        await Promise.all(questions[qIndex].answers.map(async (answer) => {
-        await axios.post(`http://localhost:8001/api/v1/test_lessons/answer/${question_id}`, { text: answer });
-        }));
+        const qIndex = questionIds.indexOf(question_id);
+        
+        await Promise.all(
+          questions[qIndex].answers.map(async (answer, aIndex) => {
+            const isCorrect = aIndex === questions[qIndex].correctAnswer; // Проверяем, является ли этот ответ правильным
+            await axios.post(`http://localhost:8001/api/v1/test_lessons/answer/${question_id}`, { 
+              text: answer, 
+              correct: isCorrect  // Отправляем флаг правильности ответа
+            });
+          })
+        );
       }
+      
 
       alert('Тест успешно сохранен!');
     } catch (error) {
@@ -97,7 +134,6 @@ const TestConstructor = () => {
       <div className="constructor_wrapper">
         <h2 className="editor_title">Создание теста</h2>
         
-        {/* Поле для ввода темы теста */} 
         <div className="field test_question">
           <label>Название темы:</label>
           <input 
@@ -108,7 +144,6 @@ const TestConstructor = () => {
           />
         </div>
 
-        {/* Динамическое добавление вопросов */}
         {questions.map((question, qIndex) => (
           <div key={qIndex} className="test_question">
             <label>Вопрос {qIndex + 1}:</label>
@@ -118,7 +153,7 @@ const TestConstructor = () => {
               onChange={(e) => handleQuestionChange(qIndex, e.target.value)} 
               placeholder="Введите вопрос" 
             />
-            
+
             {/* Динамическое добавление вариантов ответа */}
             {question.answers.map((answer, aIndex) => (
               <div key={aIndex} className="answer-block">
@@ -127,27 +162,68 @@ const TestConstructor = () => {
                   type="text" 
                   value={answer} 
                   onChange={(e) => handleAnswerChange(qIndex, aIndex, e.target.value)} 
-                  placeholder="Введите ответ" 
+                  placeholder="Введите ответ"
+                  className="answer-input"
                 />
+                <button 
+                  onClick={() => deleteAnswer(qIndex, aIndex)}
+                  className="delete-button btn_answer">
+                  ✖
+                  </button>
               </div>
             ))}
-
-            {/* Кнопка для добавления варианта ответа */}
-            <button className="new_test" onClick={() => addAnswer(qIndex)}>
+            <button className="btn_custom" onClick={() => addAnswer(qIndex)}>
               Добавить ответ
             </button>
+
+            {/* Выбор правильного ответа через селектор */}
+            <div>
+              <label>Выберите правильный ответ:</label>
+              <select 
+                value={question.correctAnswer} 
+                onChange={(e) => handleCorrectAnswerChange(qIndex, Number(e.target.value))}
+              >
+                {question.answers.map((_, aIndex) => (
+                  <option key={aIndex} value={aIndex}>Ответ {aIndex + 1}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Загрузка изображения */}
+            <div>
+              <label>Загрузить изображение:</label>
+              
+              <label class="btn_custom">
+                Выберите файл
+                <input 
+                  type="file" 
+                  accept="image/*"
+                  className="image-upload-btn"
+                  onChange={(e) => handleImageUpload(qIndex, e.target.files[0])}
+                />
+              </label>
+              
+              {question.image && <p>Изображение загружено: {question.image.name}</p>}
+            </div>
+
+
+            <button 
+              className="delete-button btn_question" 
+              onClick={() => deleteQuestion(qIndex)}>
+              ✖</button>
           </div>
         ))}
 
-        {/* Кнопка для добавления нового вопроса */}
-        <button className="btn_test_editor btn_state" onClick={addQuestion}>
-          Добавить вопрос
-        </button>
+        <div className="btns_ender">
+          <button className="btn_custom btn_state" onClick={addQuestion}>
+            Добавить вопрос
+          </button>
 
-        {/* Кнопка для сохранения */}
-        <button className="save-btn" onClick={saveTest}>
-          Сохранить
-        </button>
+          <button className="btn_custom btn_state" onClick={saveTest}>
+            Сохранить
+          </button>
+        </div>
+
       </div>
     </div>
   );

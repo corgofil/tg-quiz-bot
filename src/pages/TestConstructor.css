@@ -50,7 +50,8 @@
   }
   
   .answer-block {
-    margin-bottom: 10px;
+    margin-top: 10px;
+    position: relative;
   }
   
   .add-answer-btn, .add-question-btn, .save-btn {
@@ -76,6 +77,12 @@
     width: 100%;
     margin-top: 20px;
   }
+
+  .answer-input {
+    width: calc(100% - 30px); /* Учитываем ширину кнопки */
+    padding-right: 35px; /* Отступ справа для кнопки */
+    box-sizing: border-box; /* Учитывает отступы в ширине */
+  }
   
   .save-btn {
     display: block;
@@ -87,4 +94,71 @@
   button:focus {
     outline: none;
   }
+
+  .btn_answer {
+    position: absolute;
+    right: 10px; 
+    top: 60%; 
+    transform: translateY(-50%);
+  }
   
+  .delete-button {
+    background: transparent; /* Прозрачный фон */
+    border: none; /* Убираем границы */
+    cursor: pointer; /* Курсор при наведении */
+    color: var(--grey); /* Цвет крестика */
+    font-size: 16px; /* Размер шрифта */
+    transition: color 0.3s; /* Плавный переход цвета */
+  }
+
+  .delete-button:hover {
+    color: var(--black); /* Цвет при наведении */
+  }
+
+  .test_question {
+    position: relative;
+  }
+  
+  .btn_question {
+    position: absolute;
+    top: 0;
+    right: 0;
+    
+    padding: 5px 10px; /* Отступы внутри кнопки */
+
+  }
+  
+ 
+.btn_custom {
+  background-color: var(--accent);
+  color: var(--white);
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin: 10px 0;
+  font-size: 16px;
+	font-weight: 500;
+  display: inline-block;
+  letter-spacing: 0.15px;
+  transition: opacity 0.2s ease-in;
+}
+
+
+.btn_custom:hover {
+  opacity: 0.8;
+}
+
+.btn_state {
+  background-color: var(--black);
+}
+
+/* Оригинальный input остается скрытым */
+.image-upload-btn {
+  display: none;
+}
+
+.btns_ender {
+  display: flex;
+  justify-content: space-between;
+}

@@ -31,7 +31,7 @@ const QuestionsData = () => {
         {loading ? (
           <p>Loading...</p>
         ) : (
-          <div>
+          <div className="questions_block">
             {data.map((item) => (
               <NavLink to="/editor/info_test">
                 <div key={item.id}  className="test">

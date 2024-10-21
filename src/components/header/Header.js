@@ -1,4 +1,5 @@
-import "./style.css"
+import "./style.css";
+import {NavLink} from "react-router-dom";
 
 const Header = () => {
     return ( 
@@ -12,7 +13,7 @@ const Header = () => {
                 </div>
                 <div className="btn__wrapper">
                     <a href="#!" className="btn">Профиль</a>
-                    <a href="#!" className="btn">Редактор тестов</a>
+                    <NavLink to="/editor" className="btn">Редактор тестов</NavLink>
                     <a href="#!" className="btn">Студенты</a>
                 </div>
             </div>

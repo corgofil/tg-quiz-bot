@@ -10,7 +10,7 @@
 
 .editor_title {
     margin-bottom: 20px;
-	font-size: 18px;
+	font-size: 24px;
 	line-height: 1.4333;
     font-weight: 700;
     color: var(--black);
@@ -78,6 +78,10 @@
     color: var(--black);
 }
 
+.questions_block {
+    flex-direction: row-reverse;
+}
+
 /*INFOTEST*/
 
 .test_answers {
@@ -126,10 +130,6 @@
 	letter-spacing: 0.15px;
 	font-size: 16px;
 	font-weight: 500;
-}
-
-.btn_state {
-    background-color: var(--black);
 }
 
 .info_test {
