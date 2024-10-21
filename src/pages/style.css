@@ -78,10 +78,6 @@
     color: var(--black);
 }
 
-.questions_block {
-    flex-direction: row-reverse;
-}
-
 /*INFOTEST*/
 
 .test_answers {
