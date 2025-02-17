@@ -83,29 +83,43 @@ const TestConstructor = () => {
     }
 
     try {
-      const creator_id = '87869c3a-9eb1-4985-b7af-65242e90a271'; // Убедитесь, что здесь используется правильный id
-      const testResponse = await axios.post(`http://localhost:8001/api/v1/test_lessons/create_test/${creator_id}`, { title: testTitle });
+      const creator_id = '7e4472f7-d358-4546-b7c7-d56aa56a1d41';  
+      const testResponse = await axios.post(`http://37.220.80.182:8001/api/v1/test_lessons/create_test/${creator_id}`, { title: testTitle });
       const test_id = testResponse.data.id; 
 
       const questionIds = [];
+
+      if (!test_id) {
+        console.error("Ошибка: test_id не получен!");
+        return;
+      }
+
       for (const question of questions) {
-        const questionResponse = await axios.post(`http://localhost:8001/api/v1/test_lessons/question/${test_id}`, 
-          { text: question.questionText });
-        const question_id = questionResponse.data.id;
-        questionIds.push(question_id);
+        try {
+          console.log(`Отправка вопроса: ${question.questionText} для test_id ${test_id}`);
 
-        // Сохраняем правильный ответ
-        await axios.post(`http://localhost:8001/api/v1/test_lessons/answer/${question_id}`, {
-          answerIndex: question.correctAnswer
-        });
+          const questionResponse = await axios.post(
+            `http://37.220.80.182:8001/api/v1/question/${test_id}`,
+            { text: question.questionText },
+            { headers: { "Content-Type": "application/json" } }
+          );
 
-        // Загрузка изображения
-        if (question.image) {
-          const formData = new FormData();
-          formData.append('image', question.image);
-          await axios.post(`http://localhost:8001/api/v1/test_lessons/upload_image/${question_id}`, formData);
+          const question_id = questionResponse.data.id;
+          console.log(`Вопрос создан с ID: ${question_id}`);
+          questionIds.push(question_id);
+
+          // Сохраняем правильный ответ
+          await axios.post(
+            `http://37.220.80.182:8001/api/v1/answer/${question_id}`,
+            { answerIndex: question.correctAnswer },
+            { headers: { "Content-Type": "application/json" } }
+          );
+
+        } catch (error) {
+          console.error("Ошибка при создании вопроса:", error.response ? error.response.data : error.message);
         }
       }
+
 
       for (const question_id of questionIds) {
         const qIndex = questionIds.indexOf(question_id);
@@ -113,7 +127,7 @@ const TestConstructor = () => {
         await Promise.all(
           questions[qIndex].answers.map(async (answer, aIndex) => {
             const isCorrect = aIndex === questions[qIndex].correctAnswer; // Проверяем, является ли этот ответ правильным
-            await axios.post(`http://localhost:8001/api/v1/test_lessons/answer/${question_id}`, { 
+            await axios.post(`http://37.220.80.182:8001/api/v1/test_lessons/answer/${question_id}`, { 
               text: answer, 
               correct: isCorrect  // Отправляем флаг правильности ответа
             });

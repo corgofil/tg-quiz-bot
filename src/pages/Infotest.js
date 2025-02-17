@@ -7,7 +7,7 @@ const Infotest = () => {
         <main className="info_test_wrapper">
             <div className="container">
                 <div className="test_nav">
-                    <NavLink to="">
+                    <NavLink to="/editor">
                         <img className="arrow" src={arrow} alt="Вернуться назад"/>
                     </NavLink>
                     <NavLink to="" className="btn_test_editor">Редактировать</NavLink>

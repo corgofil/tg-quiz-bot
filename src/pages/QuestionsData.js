@@ -9,7 +9,7 @@ const QuestionsData = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:8001/api/v1/test_lessons/all_tests', {
+        const response = await axios.get('http://37.220.80.182:8001/api/v1/test_lessons/all_tests', {
           headers: {
             'ngrok-skip-browser-warning': '69420'
           }
@@ -26,8 +26,8 @@ const QuestionsData = () => {
   }, []);
 
   return (
-    <main className="creator">
-      <div className="container">
+    <main>
+      <div className="tests_wrapper">
         {loading ? (
           <p>Loading...</p>
         ) : (
