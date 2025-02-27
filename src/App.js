@@ -5,6 +5,7 @@ import Editor from "./pages/Editor";
 import Home from "./pages/Home";
 import TestConstructor from "./pages/TestConstructor";
 import Infotest from "./pages/Infotest";
+import Students from "./components/students/Students";
 
 
 import "./styles/main.css";
@@ -19,7 +20,8 @@ function App() {
           <Route path="/" element={<Home/>}/>
           <Route path="/editor" element={<Editor/>}/>
           <Route path="/editor/constructor" element={<TestConstructor/>}/>
-          <Route path="/editor/info_test" element={<Infotest/>}/>
+          <Route path="/editor/info_test/:id" element={<Infotest />} />
+          <Route path="/students" element={<Students/>}/>
         </Routes>
 
       </Router>

@@ -65,83 +65,95 @@ const TestConstructor = () => {
   // Сохранение данных
   const saveTest = async () => {
     if (!testTitle) {
-      alert('Пожалуйста, введите название теста.');
-      return;
-    }
-    
-    for (const question of questions) {
-      if (!question.questionText) {
-        alert('Пожалуйста, заполните все вопросы.');
+        alert('Пожалуйста, введите название теста.');
         return;
-      }
-      for (const answer of question.answers) {
-        if (!answer) {
-          alert('Пожалуйста, заполните все ответы.');
-          return;
+    }
+
+    for (const question of questions) {
+        if (!question.questionText) {
+            alert('Пожалуйста, заполните все вопросы.');
+            return;
         }
-      }
+        for (const answer of question.answers) {
+            if (!answer) {
+                alert('Пожалуйста, заполните все ответы.');
+                return;
+            }
+        }
     }
 
     try {
-      const creator_id = '7e4472f7-d358-4546-b7c7-d56aa56a1d41';  
-      const testResponse = await axios.post(`http://37.220.80.182:8001/api/v1/test_lessons/create_test/${creator_id}`, { title: testTitle });
-      const test_id = testResponse.data.id; 
-
-      const questionIds = [];
-
-      if (!test_id) {
-        console.error("Ошибка: test_id не получен!");
-        return;
-      }
-
-      for (const question of questions) {
-        try {
-          console.log(`Отправка вопроса: ${question.questionText} для test_id ${test_id}`);
-
-          const questionResponse = await axios.post(
-            `http://37.220.80.182:8001/api/v1/question/${test_id}`,
-            { text: question.questionText },
-            { headers: { "Content-Type": "application/json" } }
-          );
-
-          const question_id = questionResponse.data.id;
-          console.log(`Вопрос создан с ID: ${question_id}`);
-          questionIds.push(question_id);
-
-          // Сохраняем правильный ответ
-          await axios.post(
-            `http://37.220.80.182:8001/api/v1/answer/${question_id}`,
-            { answerIndex: question.correctAnswer },
-            { headers: { "Content-Type": "application/json" } }
-          );
-
-        } catch (error) {
-          console.error("Ошибка при создании вопроса:", error.response ? error.response.data : error.message);
-        }
-      }
-
-
-      for (const question_id of questionIds) {
-        const qIndex = questionIds.indexOf(question_id);
+        const creator_id = '86beac1a-d9e9-4e65-9d6a-bb4c1e22ca35';
         
-        await Promise.all(
-          questions[qIndex].answers.map(async (answer, aIndex) => {
-            const isCorrect = aIndex === questions[qIndex].correctAnswer; // Проверяем, является ли этот ответ правильным
-            await axios.post(`http://37.220.80.182:8001/api/v1/test_lessons/answer/${question_id}`, { 
-              text: answer, 
-              correct: isCorrect  // Отправляем флаг правильности ответа
-            });
-          })
+        // Создание теста
+        const testResponse = await axios.post(
+            `http://45.8.96.215:8001/api/v1/test_lessons/create_test/${creator_id}`, 
+            { title: testTitle }
         );
-      }
+        const test_id = testResponse.data.id;
+
+        if (!test_id) {
+            console.error("Ошибка: test_id не получен!");
+            return;
+        }
+
+        const questionIds = [];
+
+        // Создание вопросов
+        for (const question of questions) {
+            try {
+                console.log(`Отправка вопроса: ${question.questionText} для test_id ${test_id}`);
+
+                const questionResponse = await axios.post(
+                    `http://45.8.96.215:8001/api/v1/question/${test_id}`,
+                    { text: question.questionText },
+                    { headers: { "Content-Type": "application/json" } }
+                );
+
+                const question_id = questionResponse.data.id;
+                console.log(`Вопрос создан с ID: ${question_id}`);
+                questionIds.push(question_id);
+
+            } catch (error) {
+                console.error("Ошибка при создании вопроса:", error.response ? error.response.data : error.message);
+            }
+        }
+
+        // Создание ответов для каждого вопроса
+        for (const [qIndex, question_id] of questionIds.entries()) {
+          for (const [aIndex, answer] of questions[qIndex].answers.entries()) {
+              const answerPayload = {
+                  id: crypto.randomUUID(),  // Генерация UUID, если API требует
+                  text: answer,
+                  correct: aIndex === questions[qIndex].correctAnswer,
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
+                  active: true
+              };
+      
+              console.log("Отправка ответа:", answerPayload); // Лог для проверки
+      
+              try {
+                  await axios.post(
+                      `http://45.8.96.215:8001/api/v1/answers/answer/${question_id}`,
+                      answerPayload,
+                      { headers: { "Content-Type": "application/json" } }
+                  );
+              } catch (error) {
+                  console.error("Ошибка при создании ответа:", error.response ? error.response.data : error.message);
+              }
+          }
+        }
+      
       
 
-      alert('Тест успешно сохранен!');
+        alert('Тест успешно сохранен!');
     } catch (error) {
-      console.error('Ошибка при сохранении теста:', error);
-      alert('Произошла ошибка при сохранении теста.');
+        console.error('Ошибка при сохранении теста:', error);
+        alert('Произошла ошибка при сохранении теста.');
     }
   };
+
 
   return (
     <div className="constructor">

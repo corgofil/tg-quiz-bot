@@ -1,47 +1,65 @@
-import {NavLink} from "react-router-dom";
-
-import arrow from "./../img/left-arrow.svg"
+import React, { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
+import axios from "axios";
+import arrow from "./../img/left-arrow.svg";
 
 const Infotest = () => {
-    return ( 
+    const { id } = useParams();
+    const [test, setTest] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchTest = async () => {
+            try {
+                const response = await axios.get(`http://45.8.96.215:8001/api/v1/test_lessons/test/${id}`);
+                setTest(response.data);
+                setLoading(false);
+            } catch (error) {
+                console.error("Ошибка загрузки теста:", error);
+            }
+        };
+
+        fetchTest();
+    }, [id]);
+
+    if (loading) return <p>Загрузка...</p>;
+    if (!test) return <p>Ошибка загрузки теста.</p>;
+
+    return (
         <main className="info_test_wrapper">
             <div className="container">
                 <div className="test_nav">
-                    <NavLink to="/editor">
+                    <Link to="/editor">
                         <img className="arrow" src={arrow} alt="Вернуться назад"/>
-                    </NavLink>
-                    <NavLink to="" className="btn_test_editor">Редактировать</NavLink>
+                    </Link>
+                    <Link to={`/editor/edit_test/${id}`} className="btn_test_editor">Редактировать</Link>
                 </div>
                 <div className="test">
-                    <div className="test_title">Сетевые помехоподавляющие пассивные фильтры низких и высоких частот</div>
+                    <div className="test_title">{test.title}</div>
                     <div className="info_test">
-                        <div className="info_point">Автор: Макарян А.С.</div>
-                        <div className="info_point">30.09.24</div>
-                        <div className="info_point">Группы: 22-КБ-ИБ1, 22-КБ-ИБ2, 23-КБ-ИБ1, 23-КБ-ИБ2</div>
+                        <div className="info_point">Автор: {test.teacher?.name} {test.teacher?.last_name}</div>
+                        <div className="info_point">{new Date(test.created_at).toLocaleDateString()}</div>
+                        <div className="info_point">ID: {test.id}</div>
                     </div>
-                    <NavLink to="" className="btn_test_editor btn_state">Статистика</NavLink>
+                    <Link to={`/editor/stats/${id}`} className="btn_test_editor btn_state">Статистика</Link>
                     <div className="test_text">
-                        <div className="test_question">
-                            <div className="test_question_text">1. Здесь мог находиться ваш вопрос?</div>
-                            <div className="test_answers">
-                                <div className="test_answer">● ответ 1</div>
-                                <div className="test_answer">● ответ 2</div>
-                                <div className="test_answer">● ответ 3</div>
+                        {test.questions.map((question, index) => (
+                            <div className="test_question" key={index}>
+                                <div className="test_question_text">{index + 1}. {question.text}</div>
+                                <div className="test_answers">
+                                    {question.answers.map((answer) => (
+                                        <div key={answer.id} className="test_answer">
+                                            ● {answer.text} {answer.correct ? "(✔)" : ""}
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-                        <div className="test_question">
-                            <div className="test_question_text">2. Здесь мог находиться ваш второй вопрос?</div>
-                            <div className="test_answers">
-                                <div className="test_answer">● ответ 1</div>
-                                <div className="test_answer">● ответ 2</div>
-                                <div className="test_answer">● ответ 3</div>
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 </div>
             </div>
         </main>
     );
-}
- 
+};
+
 export default Infotest;

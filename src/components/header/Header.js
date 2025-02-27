@@ -14,7 +14,7 @@ const Header = () => {
                 <div className="btn__wrapper">
                     <a href="#!" className="btn">Профиль</a>
                     <NavLink to="/editor" className="btn">Редактор тестов</NavLink>
-                    <a href="#!" className="btn">Студенты</a>
+                    <NavLink to="/students" className="btn">Студенты</NavLink>
                 </div>
             </div>
         </header>
