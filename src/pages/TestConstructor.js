@@ -62,6 +62,35 @@ const TestConstructor = () => {
     setQuestions(newQuestions);
   };
 
+  const uploadImage = async (file, teacher_id) => {
+    try {
+        const formData = new FormData();
+        formData.append('title', file.name);
+        formData.append('teacher_id', teacher_id);   
+        formData.append('file', file); 
+
+        for (let pair of formData.entries()) {
+          console.log(pair[0] + ': ' + pair[1]);
+        }
+
+        console.log("Отправляемые данные:", formData);
+
+        console.log([...formData.entries()])
+
+        const response = await axios.post(
+          `http://45.8.96.215:8001/api/v1/media/upload_media`,
+          formData,
+          { headers: { 'Content-Type': 'application/json' } }
+        );
+
+        return response.data.url;  
+    } catch (error) {
+        console.error("Ошибка загрузки изображения:", error.response?.data || error.message);
+        return null;
+    }
+  };
+
+
   // Сохранение данных
   const saveTest = async () => {
     if (!testTitle) {
@@ -104,9 +133,15 @@ const TestConstructor = () => {
             try {
                 console.log(`Отправка вопроса: ${question.questionText} для test_id ${test_id}`);
 
+                let imageUrl = null;
+
+                if (question.image) {
+                  imageUrl = await uploadImage(question.image, creator_id);
+                }
+
                 const questionResponse = await axios.post(
                     `http://45.8.96.215:8001/api/v1/question/${test_id}`,
-                    { text: question.questionText },
+                    { text: question.questionText, image_url: imageUrl },
                     { headers: { "Content-Type": "application/json" } }
                 );
 
